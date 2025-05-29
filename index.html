@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Responsive Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: url('back2.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+      margin: 0;
+      padding: 10px;
+    }
+
+    .calc {
+      width: 100%;
+     
+      max-width: 400px;
+      background: rgba(88, 65, 65, 0.9);
+      padding: 20px;
+      text-align: center;
+      box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.6);
+      border-radius: 15px;
+    }
+
+    #res {
+      width: 100%;
+      height: 60px;
+      text-align: right;
+      background-color: rgb(2, 4, 4);
+      color: aliceblue;
+      border: none;
+      border-radius: 5px;
+      font-size: 2em;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      width: 100%;
+      height: 60px;
+      font-size: 1.5em;
+      border: none;
+      background-color: #ddd;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #bbb;
+    }
+
+    button.ac {
+      background-color: red;
+      color: white;
+    }
+
+    button.ac:hover {
+      background-color: darkred;
+    }
+
+    button.del {
+      background-color: orange;
+      color: white;
+    }
+
+    button.del:hover {
+      background-color: darkorange;
+    }
+
+    @media (max-width: 500px) {
+      button {
+        height: 50px;
+        font-size: 1.2em;
+      }
+
+      #res {
+        height: 50px;
+        font-size: 1.5em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="calc" role="application" aria-label="Calculator">
+    <input type="text" id="res" readonly aria-live="polite" aria-label="Calculator display" /><br />
+    <div class="buttons">
+      <button type="button" aria-label="Number 1" onclick="append('1')">1</button>
+      <button type="button" aria-label="Number 2" onclick="append('2')">2</button>
+      <button type="button" aria-label="Number 3" onclick="append('3')">3</button>
+      <button type="button" aria-label="Plus" onclick="append('+')">+</button>
+      <button type="button" class="del" aria-label="Delete last character" onclick="backspace()">DEL</button>
+
+      <button type="button" aria-label="Number 4" onclick="append('4')">4</button>
+      <button type="button" aria-label="Number 5" onclick="append('5')">5</button>
+      <button type="button" aria-label="Number 6" onclick="append('6')">6</button>
+      <button type="button" aria-label="Minus" onclick="append('-')">-</button>
+      <button type="button" class="ac" aria-label="Clear all" onclick="reset()">AC</button>
+
+      <button type="button" aria-label="Number 7" onclick="append('7')">7</button>
+      <button type="button" aria-label="Number 8" onclick="append('8')">8</button>
+      <button type="button" aria-label="Number 9" onclick="append('9')">9</button>
+      <button type="button" aria-label="Multiply" onclick="append('*')">*</button>
+      <button type="button" aria-label="Equals" onclick="calc()">=</button>
+
+      <button type="button" aria-label="Number 0" onclick="append('0')">0</button>
+      <button type="button" aria-label="Decimal point" onclick="append('.')">.</button>
+      <button type="button" aria-label="Divide" onclick="append('/')">/</button>
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+<script>
+  const x = document.getElementById('res');
+  let justCalculated = false; 
+
+  function append(value) {
+    if (x.value === 'Error' || x.value === 'Infinity') {
+      x.value = '';
+      justCalculated = false;
+    }
+
+    const operators = '+-*/';
+    const lastChar = x.value.slice(-1);
+
+    if (justCalculated) {
+      if (operators.includes(value)) {
+        justCalculated = false; // continue normally
+      } else {
+        x.value = '';
+        justCalculated = false;
+      }
+    }
+
+    if (operators.includes(value)) {
+      if (x.value === '' && value !== '-') {
+        return;
+      }
+      if (operators.includes(lastChar)) {
+        return;
+      }
+    }
+
+    if (value === '.') {
+      const parts = x.value.split(/[\+\-\*\/]/);
+      if (parts[parts.length - 1].includes('.')) {
+        return;
+      }
+    }
+
+    x.value += value;
+  }
+
+  function calc() {
+    try {
+      let expression = x.value;
+      if (/[+\-*/.]$/.test(expression)) {
+        expression = expression.slice(0, -1);
+      }
+      let result = eval(expression);
+      if (result === Infinity || result === -Infinity) {
+        x.value = 'Infinity';
+      } else {
+        x.value = result;
+      }
+      justCalculated = true;  
+    } catch (e) {
+      x.value = 'Error';
+      justCalculated = false;
+    }
+  }
+
+  function reset() {
+    x.value = '';
+    justCalculated = false;
+  }
+
+  function backspace() {
+    if (x.value === 'Error' || x.value === 'Infinity') {
+      x.value = '';
+      justCalculated = false;
+    } else {
+      x.value = x.value.slice(0, -1);
+    }
+  }
+
+  document.addEventListener('keydown', (event) => {
+    const allowedKeys = '0123456789+-*/.=';
+    if (allowedKeys.includes(event.key)) {
+      event.preventDefault();
+      if (event.key === 'Enter' || event.key === '=') {
+        calc();
+      } else if (event.key === '.') {
+        append('.');
+      } else if ('0123456789+-*/'.includes(event.key)) {
+        append(event.key);
+      }
+    } else if (event.key === 'Backspace') {
+      event.preventDefault();
+      backspace();
+    }
+  });
+</script>
+
+</body>
+</html>
