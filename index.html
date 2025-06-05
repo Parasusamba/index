@@ -3,39 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Responsive Calculator</title>
+  <title>Scientific Calculator</title>
   <style>
     * {
       box-sizing: border-box;
     }
-
+     
     body {
       background: url('back2.png') no-repeat center center fixed;
       background-size: cover;
       display: flex;
+      /* align-content: center; */
       justify-content: center;
       align-items: center;
       height: 80vh;
-      margin: 0;
-      padding: 10px;
     }
 
     .calc {
       width: 100%;
-     
       max-width: 400px;
       background: rgba(88, 65, 65, 0.9);
       padding: 20px;
       text-align: center;
-      box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.6);
+      box-shadow: 10px 35px 30px 10px rgba(0, 0, 0, 0.6);
       border-radius: 15px;
     }
 
     #res {
+      box-shadow: -1px 1px 3px 1px rgb(190, 215, 180);
       width: 100%;
       height: 60px;
       text-align: right;
-      background-color: rgb(2, 4, 4);
+      background-color: rgb(0, 10, 10);
       color: aliceblue;
       border: none;
       border-radius: 5px;
@@ -47,22 +46,33 @@
     .buttons {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(4, 1fr);
       gap: 10px;
     }
 
+    #zero {
+      grid-column: 1/3;
+    }
+    
+    
     button {
       width: 100%;
       height: 60px;
       font-size: 1.5em;
       border: none;
-      background-color: #ddd;
+      background-color: rgb(43, 88, 73);
       cursor: pointer;
       border-radius: 5px;
-      transition: 0.3s;
+      box-shadow: 2px 1px 15px 5px rgb(12, 19, 0);
+      transition: 0.2s;
     }
 
     button:hover {
-      background-color: #bbb;
+      background-color: #267460;
+    }
+
+    button:active {
+      background-color: #bbb; 
     }
 
     button.ac {
@@ -116,15 +126,16 @@
       <button type="button" aria-label="Number 8" onclick="append('8')">8</button>
       <button type="button" aria-label="Number 9" onclick="append('9')">9</button>
       <button type="button" aria-label="Multiply" onclick="append('*')">*</button>
-      <button type="button" aria-label="Equals" onclick="calc()">=</button>
+      <button type="button" id="equals" aria-label="Equals" onclick="calc()">=</button>
 
-      <button type="button" aria-label="Number 0" onclick="append('0')">0</button>
+      <button type="button" id="zero" aria-label="Number 0" onclick="append('0')">0</button>
       <button type="button" aria-label="Decimal point" onclick="append('.')">.</button>
       <button type="button" aria-label="Divide" onclick="append('/')">/</button>
-      <div></div>
-      <div></div>
+
+      
     </div>
   </div>
+
 <script>
   const x = document.getElementById('res');
   let justCalculated = false; 
@@ -140,7 +151,7 @@
 
     if (justCalculated) {
       if (operators.includes(value)) {
-        justCalculated = false; // continue normally
+        justCalculated = false;
       } else {
         x.value = '';
         justCalculated = false;
@@ -201,9 +212,13 @@
 
   document.addEventListener('keydown', (event) => {
     const allowedKeys = '0123456789+-*/.=';
-    if (allowedKeys.includes(event.key)) {
+
+    if (event.key === 'Enter') {
       event.preventDefault();
-      if (event.key === 'Enter' || event.key === '=') {
+      calc();
+    } else if (allowedKeys.includes(event.key)) {
+      event.preventDefault();
+      if (event.key === '=') {
         calc();
       } else if (event.key === '.') {
         append('.');
